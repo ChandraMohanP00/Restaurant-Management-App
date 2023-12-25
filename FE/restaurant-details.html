@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Restaurant Details</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="container mt-5">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="index.html">BistroPal</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Restaurant List</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="addrestaurant.html">Add Restaurant</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.html">About Us</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <h1 class="pt-4 mb-4">Restaurant Details</h1>
+
+  <div id="loading" class="alert alert-info" role="alert" style="display: none;">
+    Loading...
+  </div>
+
+  <div id="error" class="alert alert-danger" role="alert" style="display: none;"></div>
+
+  <div id="restaurantDetails" class="mt-3">
+  </div>
+
+  <footer class="text-center mt-5">
+    <p>&copy; 2023 BistroPal. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const loadingContainer = document.getElementById('loading');
+    const errorContainer = document.getElementById('error');
+    const restaurantDetailsContainer = document.getElementById('restaurantDetails');
+
+    const apiUrl = 'http://localhost:3000/restaurants';
+
+    const getParameterByName = (name, url) => {
+  if (!url) url = window.location.href;
+
+  name = name.replace(/[\[\]]/g, "\\$&");
+  const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`);
+  const results = regex.exec(url);
+
+  if (!results) return null;
+  if (!results[2]) return '';
+
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+};
+
+
+
+const restaurantId = getParameterByName('id');
+
+console.log('Restaurant ID:', restaurantId);
+
+const fetchData = async () => {
+  try {
+    loadingContainer.style.display = 'block';
+
+    const response = await fetch(`${apiUrl}/${restaurantId}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch data: ${response.status}`);
+    }
+
+    const restaurantData = await response.json();
+    displayRestaurantDetails(restaurantData);
+  } catch (error) {
+    errorContainer.style.display = 'block';
+    errorContainer.textContent = `Error: ${error.message}`;
+  } finally {
+    loadingContainer.style.display = 'none';
+  }
+};
+
+
+const displayRestaurantDetails = (restaurant) => {
+      loadingContainer.style.display = 'none';
+      errorContainer.style.display = 'none';
+
+      restaurantDetailsContainer.innerHTML = `
+        <h2>${restaurant.name}</h2>
+        <p>Cuisine: ${restaurant.cuisine}</p>
+        <p>Address: ${restaurant.address}, ${restaurant.city}</p>
+        <p>Rating: ${restaurant.rating}</p>
+        <h1>Menu:</h1>
+        <h1>Review:</h1>
+        
+      `;
+    };
+
+    fetchData();
+  </script>
+
+</body>
+
+</html>
